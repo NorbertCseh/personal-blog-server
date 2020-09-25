@@ -15,7 +15,7 @@ export async function createUser(
 		} else {
 			let hashedPassword;
 			try {
-				hashedPassword = await argon2.hash(password);
+				hashedPassword = await argon2.hash(password as string);
 			} catch (error) {
 				console.error(error);
 			}
@@ -43,17 +43,34 @@ export async function createUser(
 	});
 }
 
-export async function loginUser(email: String, password: string) {
+export async function loginUser(email: String, password: String) {
 	return await UserSchema.findOne({
 		email: email,
-	}).then((user) => {
+	}).then(async (user) => {
 		if (!user) {
 			return {
 				status: 400,
 				payload: 'Wrong email or password',
 			};
 		} else {
-			argon2.verify(user.password, password);
+			return await argon2
+				.verify(user.password as string, password as string)
+				.then((result) => {
+					if (result) {
+						// TODO Give a token to the user
+						return {
+							status: 200,
+							payload: 'Access granted, now you are logged in.',
+						};
+					} else {
+						return {
+							status: 400,
+							payload: 'Wrong email or password',
+						};
+					}
+				});
 		}
 	});
 }
+
+//Can I delete the return {status:200, payload: 'blabla'} and create only 1 at the top?
