@@ -1,6 +1,8 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
+import * as passport from 'passport';
+
 import keys from './config/keys';
 
 import userRoutes from './routes/User';
@@ -19,6 +21,9 @@ async function main() {
 		.catch((err) => {
 			console.error(err);
 		});
+
+	app.use(passport.initialize());
+	require('./config/passport')(passport);
 
 	app.use(bodyParser.urlencoded({ extended: false }));
 	app.use(bodyParser.json());
