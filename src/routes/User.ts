@@ -1,11 +1,18 @@
 import * as express from 'express';
 const router = express.Router();
-import { createUser, loginUser, editUser } from '../middleware/User';
+import {
+	createUser,
+	loginUser,
+	editUser,
+	getSingleUser,
+} from '../middleware/User';
+import * as passport from 'passport';
 
 router.post('/register', (req, res) => {
 	return createUser(
 		req.body.name,
 		req.body.email,
+		req.body.handle,
 		req.body.password,
 		req.body.avatar
 	)
@@ -29,13 +36,17 @@ router.post('/login', (req, res) => {
 	});
 });
 
-router.put('/:_id', (req, res) => {
-	return editUser(req.params._id, req.body).then((response) => {
-		return res.status(response.status).json({
-			msg: response.payload,
-			dateTime: Date.now(),
+router.get(
+	'/:handle',
+	passport.authenticate('jwt', { session: false }),
+	(req, res) => {
+		return getSingleUser(req.params.handle).then((response) => {
+			return res.status(response.status).json({
+				msg: response.payload,
+				dateTime: Date.now(),
+			});
 		});
-	});
-});
+	}
+);
 
 export default router;
