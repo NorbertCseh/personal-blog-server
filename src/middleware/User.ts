@@ -2,7 +2,7 @@ import UserSchema from '../models/User';
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import keys from '../config/keys';
-import { userInfo } from 'os';
+import { UserDoc } from 'documents/User';
 
 export async function createUser(
 	name: String,
@@ -94,14 +94,57 @@ export async function loginUser(email: String, password: String) {
 	});
 }
 
-export async function editUser(_id: String, fieldsToEdit: Object) {
+export async function editUser(requestedUser: any, fieldsToEdit: any) {
+	//PLS GOD CHANGE THE ANY!!!!
+
 	//Check the logged in user if she/he is the same person who is editing
-	//Check if the user is admin, if she/he is admin then she/he can edit the profile coz admin...
+	//Check if the user is admin, if she/he is admin then she/he can edit the profile coz admin... DO I NEED THIS?
 	//Check the req.body if fields are the same as in the db, if yes, return something
-	return {
-		status: 200,
-		payload: 'Fine',
-	};
+	return await UserSchema.findOne({ email: requestedUser.email }).then(
+		async (user) => {
+			console.log('Requested user: ', requestedUser);
+
+			console.log('Fields to edit: ', fieldsToEdit);
+
+			console.log('User: ', user);
+			console.log((requestedUser._id as String) === (user._id as String));
+			console.log('UserID: ', user._id);
+			console.log('RequestedID: ', requestedUser._id);
+
+			//Somethings are not okey here, pls Check, maybe it's the ANY?
+
+			if (requestedUser._id === user._id) {
+				//Do the change
+				if (fieldsToEdit.name) {
+					user.name = fieldsToEdit.name;
+				}
+				if (fieldsToEdit.email) {
+					user.email = fieldsToEdit.email;
+				}
+				if (fieldsToEdit.handle) {
+					user.handle = fieldsToEdit.handle;
+				}
+				if (fieldsToEdit.avatar) {
+					user.avatar = fieldsToEdit.avatar;
+				}
+				if (fieldsToEdit.password) {
+					user.password = fieldsToEdit.password;
+				}
+				user.save();
+				console.log('New user: ', user);
+				return {
+					status: 200,
+					msg: 'User updated.',
+					user: user,
+				};
+			} else {
+				return {
+					status: 401,
+					msg: 'You cannot edit this user.',
+				};
+			}
+		}
+	);
 }
 
 export async function getSingleUser(handle: String) {

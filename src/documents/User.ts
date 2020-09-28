@@ -6,7 +6,7 @@ export interface UserDoc extends mongoose.Document {
 	handle: String;
 	avatar: String;
 	password: String;
-	isAdmin: String;
+	isAdmin: Boolean;
 	registerDate: String;
 	lastUpdatedDate: String;
 }

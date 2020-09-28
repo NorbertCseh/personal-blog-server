@@ -39,10 +39,24 @@ router.post('/login', (req, res) => {
 router.get(
 	'/:handle',
 	passport.authenticate('jwt', { session: false }),
-	(req, res) => {
-		return getSingleUser(req.params.handle).then((response) => {
-			return res.status(response.status).json({
+	async (req, res) => {
+		return await getSingleUser(req.params.handle).then(async (response) => {
+			return await res.status(response.status).json({
 				msg: response.payload,
+				dateTime: Date.now(),
+			});
+		});
+	}
+);
+
+router.put(
+	'/:handle',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res) => {
+		return await editUser(req.user, req.body).then(async (response) => {
+			return await res.status(response.status).json({
+				msg: response.msg,
+				user: response.user,
 				dateTime: Date.now(),
 			});
 		});
