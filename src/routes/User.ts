@@ -5,9 +5,12 @@ import {
 	loginUser,
 	editUser,
 	getSingleUser,
+	getAllUsers,
 } from '../middleware/User';
 import * as passport from 'passport';
+import { UserDoc } from 'documents/User';
 
+//Register
 router.post('/register', (req, res) => {
 	return createUser(
 		req.body.name,
@@ -26,6 +29,7 @@ router.post('/register', (req, res) => {
 		});
 });
 
+//Login
 router.post('/login', (req, res) => {
 	return loginUser(req.body.email, req.body.password).then((response) => {
 		return res.status(response.status).json({
@@ -36,6 +40,21 @@ router.post('/login', (req, res) => {
 	});
 });
 
+//Get all Users
+router.get(
+	'/users',
+	passport.authenticate('jwt', { session: false }),
+	async (req, res) => {
+		return await getAllUsers(req.user).then(async (response) => {
+			return await res.status(response.status).json({
+				users: response.users,
+				dateTime: Date.now(),
+			});
+		});
+	}
+);
+
+//Get single User
 router.get(
 	'/:handle',
 	passport.authenticate('jwt', { session: false }),
@@ -49,19 +68,22 @@ router.get(
 	}
 );
 
+//Edit user
 router.put(
 	'/:handle',
 	passport.authenticate('jwt', { session: false }),
 	async (req, res) => {
-		return await editUser(req.user, req.body, req.params.handle).then(
-			async (response) => {
-				return await res.status(response.status).json({
-					msg: response.msg,
-					user: response.user,
-					dateTime: Date.now(),
-				});
-			}
-		);
+		return await editUser(
+			req.user as UserDoc,
+			req.body,
+			req.params.handle
+		).then(async (response) => {
+			return await res.status(response.status).json({
+				msg: response.msg,
+				user: response.user,
+				dateTime: Date.now(),
+			});
+		});
 	}
 );
 
