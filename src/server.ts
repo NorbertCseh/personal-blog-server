@@ -6,6 +6,7 @@ import * as passport from 'passport';
 import keys from './config/keys';
 
 import userRoutes from './routes/User';
+import postRoutes from './routes/Post';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +30,7 @@ async function main() {
 	app.use(bodyParser.json());
 
 	app.use('/api/user', userRoutes);
+	app.use('/api/post', postRoutes);
 
 	await app.listen(PORT, () => {
 		console.log(`App is listening on port: ${PORT}`);

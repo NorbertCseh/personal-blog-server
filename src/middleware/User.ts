@@ -2,7 +2,7 @@ import UserSchema from '../models/User';
 import * as argon2 from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import keys from '../config/keys';
-import { UserDoc } from 'documents/User';
+import { UserDoc } from '../documents/User';
 
 export async function createUser(
 	name: String,
@@ -173,9 +173,7 @@ export async function getSingleUser(handle: String) {
 		});
 }
 
-export async function getAllUsers(requestedUser: Express.User) {
-	console.log(requestedUser);
-
+export async function getAllUsers() {
 	return await UserSchema.find().then((users) => {
 		return {
 			status: 200,
