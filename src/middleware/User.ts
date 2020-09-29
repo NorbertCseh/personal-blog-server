@@ -101,18 +101,13 @@ export async function editUser(
 	fieldsToEdit: UserDoc,
 	handle: String
 ) {
-	const requestedPerson = await UserSchema.findById(
-		requestedUser._id,
-		(err, user) => {
+	const requestedPerson = await UserSchema.findById(requestedUser._id).then(
+		(user) => {
 			return user;
 		}
 	);
-
-	//Miért nem volt jó a .then(user => return user)?????
-
-	let userToEdit = await UserSchema.findOne(
-		{ handle: handle },
-		(err, user) => {
+	let userToEdit = await UserSchema.findOne({ handle: handle }).then(
+		(user) => {
 			return user;
 		}
 	);
