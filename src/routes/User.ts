@@ -53,13 +53,15 @@ router.put(
 	'/:handle',
 	passport.authenticate('jwt', { session: false }),
 	async (req, res) => {
-		return await editUser(req.user, req.body).then(async (response) => {
-			return await res.status(response.status).json({
-				msg: response.msg,
-				user: response.user,
-				dateTime: Date.now(),
-			});
-		});
+		return await editUser(req.user, req.body, req.params.handle).then(
+			async (response) => {
+				return await res.status(response.status).json({
+					msg: response.msg,
+					user: response.user,
+					dateTime: Date.now(),
+				});
+			}
+		);
 	}
 );
 
