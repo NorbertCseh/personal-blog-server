@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import { PostDoc } from './Post';
 
 export interface UserDoc extends mongoose.Document {
-	_id: Number;
+	_id: String;
 	name: String;
 	email: String;
 	handle: String;
