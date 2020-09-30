@@ -29,6 +29,12 @@ const UserSchema: Schema = new Schema({
 		type: Boolean,
 		required: true,
 	},
+	posts: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Post',
+		},
+	],
 	registerDate: {
 		type: Date,
 		required: true,

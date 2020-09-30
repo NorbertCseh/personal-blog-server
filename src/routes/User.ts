@@ -20,9 +20,7 @@ router.post('/register', (req, res) => {
 		req.body.avatar
 	)
 		.then((response) => {
-			return res
-				.status(response.status)
-				.json({ msg: response.payload, TimeStamp: Date.now() });
+			return res.status(response.status).json(response);
 		})
 		.catch((err) => {
 			return res.json(err);
@@ -32,11 +30,7 @@ router.post('/register', (req, res) => {
 //Login
 router.post('/login', (req, res) => {
 	return loginUser(req.body.email, req.body.password).then((response) => {
-		return res.status(response.status).json({
-			msg: response.msg,
-			token: response.token,
-			TimeStamp: Date.now(),
-		});
+		return res.status(response.status).json(response);
 	});
 });
 
@@ -46,10 +40,7 @@ router.get(
 	passport.authenticate('jwt', { session: false }),
 	async (req, res) => {
 		return await getAllUsers().then(async (response) => {
-			return await res.status(response.status).json({
-				users: response.users,
-				TimeStamp: Date.now(),
-			});
+			return await res.status(response.status).json(response);
 		});
 	}
 );
@@ -60,10 +51,7 @@ router.get(
 	passport.authenticate('jwt', { session: false }),
 	async (req, res) => {
 		return await getSingleUser(req.params.handle).then(async (response) => {
-			return await res.status(response.status).json({
-				msg: response.payload,
-				TimeStamp: Date.now(),
-			});
+			return await res.status(response.status).json(response);
 		});
 	}
 );
@@ -78,11 +66,7 @@ router.put(
 			req.body,
 			req.params.handle
 		).then(async (response) => {
-			return await res.status(response.status).json({
-				msg: response.msg,
-				user: response.user,
-				TimeStamp: Date.now(),
-			});
+			return await res.status(response.status).json(response);
 		});
 	}
 );

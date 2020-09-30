@@ -1,5 +1,8 @@
+import { PostDoc } from 'documents/Post';
+import { isNull } from 'util';
 import { UserDoc } from '../documents/User';
 import PostSchema from '../models/Post';
+import UserSchema from '../models/User';
 
 export async function createPost(
 	author: UserDoc,
@@ -14,18 +17,55 @@ export async function createPost(
 		lastUpdatedDate: Date.now(),
 	});
 
-	return await newPost
-		.save()
-		.then((post) => {
-			return {
-				status: 200,
-				payload: post,
-			};
-		})
-		.catch((err) => {
+	return await UserSchema.findOne({ _id: author._id }).then(async (user) => {
+		let error;
+		await user.posts.push(newPost as PostDoc);
+		await user.save().catch((err) => {
+			error = err;
+		});
+		await newPost.save().catch((err) => {
+			error = err;
+		});
+		if (error) {
 			return {
 				status: 400,
-				payload: err,
+				error: error,
+				timeStamp: Date.now(),
 			};
+		} else {
+			return {
+				status: 201,
+				post: newPost,
+				timeStamp: Date.now(),
+			};
+		}
+	});
+}
+
+export async function getAllPostsFromUser(handle: String) {
+	let error;
+	return await UserSchema.findOne({ handle: handle })
+		.populate('posts')
+		.then((result) => {
+			if (!result) {
+				error = 'There is no user with this handle';
+			}
+
+			if (result.posts.length === 0) {
+				error = 'This user has no posts';
+			}
+			if (error) {
+				return {
+					status: 400,
+					error: error,
+					timeStamp: Date.now(),
+				};
+			} else {
+				return {
+					status: 200,
+					posts: result.posts,
+					timeStamp: Date.now(),
+				};
+			}
 		});
 }

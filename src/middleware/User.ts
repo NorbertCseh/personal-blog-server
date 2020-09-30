@@ -15,7 +15,8 @@ export async function createUser(
 		if (user) {
 			return {
 				status: 400,
-				payload: 'Email was already taken',
+				error: 'Email was already taken',
+				TimeStamp: Date.now(),
 			};
 		} else {
 			let hashedPassword;
@@ -40,11 +41,12 @@ export async function createUser(
 				.then((user) => {
 					return {
 						status: 201,
-						payload: user,
+						user: user,
+						TimeStamp: Date.now(),
 					};
 				})
 				.catch((err) => {
-					return { status: 400, payload: err };
+					return { status: 400, error: err };
 				});
 		}
 	});
@@ -59,8 +61,8 @@ export async function loginUser(email: String, password: String) {
 			if (!user) {
 				return {
 					status: 400,
-					msg: 'Wrong email or password',
-					token: null,
+					error: 'Wrong email or password',
+					TimeStamp: Date.now(),
 				};
 			} else {
 				return await argon2
@@ -83,12 +85,13 @@ export async function loginUser(email: String, password: String) {
 								status: 200,
 								msg: 'Access granted, now you are logged in.',
 								token: 'Bearer ' + token,
+								TimeStamp: Date.now(),
 							};
 						} else {
 							return {
 								status: 400,
-								msg: 'Wrong email or password',
-								token: null,
+								error: 'Wrong email or password',
+								TimeStamp: Date.now(),
 							};
 						}
 					});
@@ -134,11 +137,13 @@ export async function editUser(
 			status: 200,
 			msg: 'User updated.',
 			user: userToEdit,
+			TimeStamp: Date.now(),
 		};
 	} else {
 		return {
 			status: 401,
-			msg: 'You cannot edit this user.',
+			error: 'You cannot edit this user.',
+			TimeStamp: Date.now(),
 		};
 	}
 }
@@ -149,26 +154,22 @@ export async function getSingleUser(handle: String) {
 			if (!user) {
 				return {
 					status: 400,
-					payload: 'This is not the page that you are looking for!',
+					error: 'This is not the page that you are looking for!',
+					TimeStamp: Date.now(),
 				};
 			} else {
 				return {
 					status: 200,
-					payload: {
-						_id: user._id,
-						email: user.email,
-						handle: handle,
-						name: user.name,
-						avatar: user.avatar,
-						registerDate: user.registerDate,
-					},
+					user: user,
+					TimeStamp: Date.now(),
 				};
 			}
 		})
 		.catch((err) => {
 			return {
 				status: 400,
-				payload: err,
+				error: err,
+				TimeStamp: Date.now(),
 			};
 		});
 }
@@ -178,6 +179,7 @@ export async function getAllUsers() {
 		return {
 			status: 200,
 			users: users,
+			TimeStamp: Date.now(),
 		};
 	});
 }

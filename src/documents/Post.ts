@@ -3,7 +3,7 @@ import { UserDoc } from './User';
 
 export interface PostDoc extends mongoose.Document {
 	_id: Number;
-	author: Number; //Maybe its wrong
+	author: UserDoc;
 	postTitle: String;
 	postBody: String;
 	createdDate: Number;
